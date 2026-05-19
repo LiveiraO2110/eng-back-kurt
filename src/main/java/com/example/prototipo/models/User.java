@@ -7,10 +7,9 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
-@Table(name = "user")
+@Table(name = "lawyer")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +20,7 @@ public class User {
     @Getter
     private String name;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "lawyer")
     @Getter
     private List<Customer> customers =  new ArrayList<>();
 
