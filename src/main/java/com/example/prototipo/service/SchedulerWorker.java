@@ -1,14 +1,13 @@
 package com.example.prototipo.service;
 
-import com.example.prototipo.models.Customer;
 import com.example.prototipo.models.Procurement;
 import com.example.prototipo.models.SearchTerms;
 import com.example.prototipo.records.DailyResponse;
 import com.example.prototipo.records.OpportunitiesPNCP;
-import com.example.prototipo.repository.CustomerRepository;
 import com.example.prototipo.repository.ProcurementRepository;
 import com.example.prototipo.repository.SearchTermsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -27,40 +26,60 @@ public class SchedulerWorker {
 
     public SchedulerWorker(){
         this.restClient = RestClient.builder()
-                .baseUrl("https://pncp.gov.br/api/search/")
+                .baseUrl("https://pncp.gov.br")
                 .build();
     }
 
     public void customerSearchTerms(){
-        List<OpportunitiesPNCP> procurements = dailySearch();
         List<SearchTerms> terms = searchTermsRepository.findAll();
 
         for (SearchTerms term : terms) {
-            for (OpportunitiesPNCP procurement : procurements) {
-                if(
-                        procurement.description() != null &&
-                        procurement.description().toLowerCase().contains(term.getTerm().toLowerCase())
-                ){
-//                    boolean alreadyExists = repository.existsByCustomer_IdAndPncpId(term.getCustomer().getId(), procurement.numero_controle_pncp());
-//
-//                    if (!alreadyExists) {
-//                        Procurement newProcurement = new Procurement(term.getCustomer(), procurement);
-//                        repository.save(newProcurement);
-//                    }
+            List<OpportunitiesPNCP> procurements = dailySearch(term.getTerm());
 
-                    System.out.println(procurement);
+            System.out.println(term.getTerm()+": ");
+            for (OpportunitiesPNCP procurement : procurements) {
+
+                Procurement newProcurement = new Procurement(term.getCustomer(), procurement);
+
+                String[] controle =  procurement.numero_controle_pncp().replace("/", "-").split("-");
+
+                StringBuilder builder = new StringBuilder();
+                builder.append(controle[2]);
+
+                while(true){
+                    if(builder.toString().charAt(0) == '0'){
+                        builder.deleteCharAt(0);
+                    } else {
+                        break;
+                    }
                 }
+
+                int doc = 1;
+
+                while(true) {
+                    String link = String.format("/pncp-api/v1/orgaos/%s/compras/%s/%s/arquivos/%d", controle[0], controle[3], builder, doc);
+
+                    try{
+                        testLink(link);
+                        doc++;
+                        newProcurement.addLink("https://pncp.gov.br"+link);
+                    } catch (Exception e) {
+                        break;
+                    }
+                }
+
+                System.out.printf(newProcurement.toString());
             }
         }
     }
 
-    public List<OpportunitiesPNCP> dailySearch(){
+    private List<OpportunitiesPNCP> dailySearch(String term){
         List<OpportunitiesPNCP> opportunities = new ArrayList<>();
 
         int page = 1;
 
         while(true){
-            List<OpportunitiesPNCP> response = getAllByPage(page);
+            List<OpportunitiesPNCP> response = getAllByPage(term, page);
 
             List<OpportunitiesPNCP> filtered = response.stream()
                     .filter(r -> r.data_atualizacao_pncp().toLocalDate().isEqual(LocalDate.now()))
@@ -77,11 +96,13 @@ public class SchedulerWorker {
                 .toList();
     }
 
-    private List<OpportunitiesPNCP> getAllByPage(int page){
+    private List<OpportunitiesPNCP> getAllByPage(String q, int page){
         try{
             DailyResponse response = restClient
                     .get()
                     .uri(uriBuilder -> uriBuilder
+                            .path("/api/search/")
+                            .queryParam("q", q)
                             .queryParam("tipos_documento", "edital")
                             .queryParam("ordenacao", "-data")
                             .queryParam("pagina", page)
@@ -95,6 +116,23 @@ public class SchedulerWorker {
             return response != null ? response.items() : List.of();
         } catch (Exception e){
             return List.of();
+        }
+    }
+
+    private void testLink(String path) throws Exception {
+        try{
+            restClient
+                    .get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(path)
+                            .build())
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
+                        throw new RuntimeException("Error ao realizar a requisição");
+                    }))
+                    .body(String.class);
+        } catch (Exception ex){
+            throw new Exception("Error 404");
         }
     }
 }

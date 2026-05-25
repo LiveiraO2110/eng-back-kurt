@@ -25,6 +25,8 @@ public class SearchTerms {
     @NotNull
     private Customer customer;
 
+    public SearchTerms(){}
+
     public SearchTerms(Customer customer, String term){
         this.term = term;
         this.customer = customer;

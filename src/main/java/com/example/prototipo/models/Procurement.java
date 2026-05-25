@@ -1,15 +1,16 @@
 package com.example.prototipo.models;
 
 import com.example.prototipo.records.OpportunitiesPNCP;
-import com.example.prototipo.records.requests.ProcurementRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "procurement", uniqueConstraints = {
+@Table(name = "procurements", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"customer_id", "pncpId"})
 })
 public class Procurement {
@@ -54,6 +55,14 @@ public class Procurement {
     @Setter
     private String modalidade;
 
+    @Getter
+    @Setter
+    private boolean validated;
+
+    @ElementCollection
+    @Getter
+    private final Set<String> links = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     @Getter
@@ -73,5 +82,29 @@ public class Procurement {
         this.uf = opportunity.uf();
         this.modalidade = opportunity.modalidade_licitacao_nome();
         this.customer = customer;
+        this.validated = false;
+    }
+
+    public void addLink(String link){
+        links.add(link);
+    }
+
+    @Override
+    public String toString() {
+        return "Procurement{" +
+                "id=" + getId() +
+                ", pncpId='" + pncpId + '\'' +
+                ", description='" + description + '\'' +
+                ", city='" + city + '\'' +
+                ", openDate=" + openDate +
+                ", closeDate=" + closeDate +
+                ", cnpj='" + cnpj + '\'' +
+                ", name='" + name + '\'' +
+                ", uf='" + uf + '\'' +
+                ", modalidade='" + modalidade + '\'' +
+                ", validated=" + validated +
+                ", links=" + links +
+                ", customer=" + customer +
+                '}';
     }
 }

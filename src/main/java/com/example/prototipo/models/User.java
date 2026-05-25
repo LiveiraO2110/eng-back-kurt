@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "lawyer")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class User {
     @Getter
     private String name;
 
-    @OneToMany(mappedBy = "lawyer")
+    @OneToMany(mappedBy = "user")
     @Getter
     private List<Customer> customers =  new ArrayList<>();
 

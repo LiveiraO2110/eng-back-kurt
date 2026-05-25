@@ -28,12 +28,12 @@ public class ControllerCustomer {
         return ResponseEntity.status(HttpStatus.CREATED).body(new CustomerDTO(service.createCustomer(customer)));
     }
 
-    @PutMapping("/{id}/searchTerms/add")
+    @PostMapping("/{id}/searchTerms/add")
     public ResponseEntity<CustomerDTO> addSearchTerms(@PathVariable Long id, @RequestBody Set<String> terms){
         return ResponseEntity.ok().body(new CustomerDTO(service.addSearchTerms(id, terms)));
     }
 
-    @PutMapping("/{id}/searchTerms/remove")
+    @PostMapping("/{id}/searchTerms/remove")
     public ResponseEntity<CustomerDTO> removeSearchTerms(@PathVariable Long id, @RequestBody TermRequest term){
         return ResponseEntity.ok().body(new CustomerDTO(service.removeSearchTerm(id, term.name())));
     }

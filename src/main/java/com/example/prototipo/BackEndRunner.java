@@ -1,12 +1,9 @@
 package com.example.prototipo;
 
-import com.example.prototipo.records.OpportunitiesPNCP;
 import com.example.prototipo.service.SchedulerWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class BackEndRunner implements CommandLineRunner {
@@ -15,8 +12,6 @@ public class BackEndRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-//        List<OpportunitiesPNCP> result = worker.dailySearch();
-//
-//        result.forEach(System.out::println);
+        worker.customerSearchTerms();
     }
 }
