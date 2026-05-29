@@ -11,4 +11,6 @@ public interface ProcurementRepository extends JpaRepository<Procurement, Long> 
     List<Procurement> findByCustomer_Id(Long id);
 
     boolean existsByCustomer_IdAndPncpId(Long customer_id, String pncpid);
+
+    List<Procurement> findByPncpId(String pncpId);
 }

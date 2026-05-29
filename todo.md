@@ -14,6 +14,6 @@ atributos das licitações
 ### Filtros:
 
 - UF
-- Data 
+- Data
 
 ## 3 - Ver se é necessário armazenar os itens das licitações

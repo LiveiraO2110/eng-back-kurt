@@ -1,5 +1,6 @@
 package com.example.prototipo.controller;
 
+import com.example.prototipo.enums.Date;
 import com.example.prototipo.records.requests.ProcurementRequest;
 import com.example.prototipo.records.response.ProcurementDTO;
 import com.example.prototipo.service.ProcurementService;
@@ -26,11 +27,14 @@ public class ControllerProcurement {
         return service.getAllByCustomer(id).stream().map(ProcurementDTO::new).toList();
     }
 
-//    @GetMapping("/search")
-//    public List<ProcurementDTO> filter (
-//            @RequestParam(value = "data"),
-//            @
-//    )
+    @GetMapping("/customer/{id}/search")
+    public List<ProcurementDTO> filter (
+            @RequestParam(value = "data", required = false, defaultValue = "DIA") Date date,
+            @RequestParam(value = "ufs", required = false, defaultValue = "RS") String ufs,
+            @PathVariable("id") Long customerId
+    ){
+        return service.search(customerId, date, ufs).stream().map(ProcurementDTO::new).toList();
+    }
 
     @PostMapping
     public ResponseEntity<ProcurementDTO> createProcurement(@RequestBody ProcurementRequest request){

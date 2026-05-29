@@ -3,6 +3,7 @@ package com.example.prototipo.records.response;
 import com.example.prototipo.models.Procurement;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public record ProcurementDTO(
     Long id,
@@ -16,7 +17,9 @@ public record ProcurementDTO(
     LocalDateTime closeDate,
     String cnpj,
     String name,
-    String modalidade
+    String modalidade,
+    String link,
+    Set<String> documentos
 ) {
     public ProcurementDTO(Procurement procurement){
         this(
@@ -31,7 +34,9 @@ public record ProcurementDTO(
                 procurement.getCloseDate(),
                 procurement.getCnpj(),
                 procurement.getName(),
-                procurement.getModalidade()
+                procurement.getModalidade(),
+                procurement.getEditalLink(),
+                procurement.getLinks()
         );
     }
 }

@@ -12,6 +12,5 @@ public class BackEndRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        worker.customerSearchTerms();
     }
 }

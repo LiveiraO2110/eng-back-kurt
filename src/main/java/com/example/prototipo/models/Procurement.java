@@ -25,6 +25,8 @@ public class Procurement {
 
     @Getter
     @Setter
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Getter
@@ -58,6 +60,10 @@ public class Procurement {
     @Getter
     @Setter
     private boolean validated;
+
+    @Getter
+    @Setter
+    private String editalLink;
 
     @ElementCollection
     @Getter
