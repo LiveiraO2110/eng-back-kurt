@@ -9,19 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "usuarios")
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
+
     @NotBlank
-    @Setter
-    @Getter
+    @Column(name = "nome", nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "user")
-    @Getter
     private List<Customer> customers =  new ArrayList<>();
 
     public User(){}

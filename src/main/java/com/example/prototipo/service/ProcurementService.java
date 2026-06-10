@@ -6,14 +6,12 @@ import com.example.prototipo.models.Customer;
 import com.example.prototipo.models.Procurement;
 import com.example.prototipo.models.SearchTerms;
 import com.example.prototipo.records.DailyResponse;
+import com.example.prototipo.records.FileResponse;
 import com.example.prototipo.records.OpportunitiesPNCP;
-import com.example.prototipo.records.requests.ProcurementRequest;
 import com.example.prototipo.repository.CustomerRepository;
 import com.example.prototipo.repository.ProcurementRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -40,15 +38,9 @@ public class ProcurementService {
         return repository.findAll();
     }
 
-    public List<Procurement> getAllByCustomer(Long customerId){
-        return repository.findByCustomer_Id(customerId);
-    }
-
-    public Procurement createProcurement (ProcurementRequest request){
-        Customer customer = customerRepository.findById(request.customerId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente com id "+request.customerId()+" não encontrado"));
-
-        return repository.save(new Procurement(customer, request.procurement()));
+    public Procurement getById(Long id){
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Edital não encotrado"));
     }
 
     public List<Procurement> search(Long customerId, Date date, String ufs){
@@ -60,7 +52,6 @@ public class ProcurementService {
 
         for(SearchTerms term : customer.getSearchTerms()){
             int page = 1;
-
 
             while(true){
                 List<OpportunitiesPNCP> opps = searchByPage(term.getTerm(), ufs, page)
@@ -106,51 +97,15 @@ public class ProcurementService {
         }
     }
 
-    @Transactional
-    public static void getLinks(Procurement procurement){
-        String[] controle =  procurement.getPncpId().replace("/", "-").split("-");
+    public static void getLink(Procurement procurement){
+        String path = "/pncp-api/v1/orgaos/";
 
-        StringBuilder builder = new StringBuilder();
-        builder.append(controle[2]);
-
-        while(true){
-            if(builder.toString().charAt(0) == '0'){
-                builder.deleteCharAt(0);
-            } else {
-                break;
-            }
-        }
-
-        int doc = 1;
-
-        while(true) {
-            String link = String.format("/pncp-api/v1/orgaos/%s/compras/%s/%s/arquivos/%d", controle[0], controle[3], builder, doc);
-
-            try{
-                ProcurementService.testLink(link);
-                doc++;
-                procurement.addLink("https://pncp.gov.br"+link);
-            procurement.setEditalLink(String.format("https://pncp.gov.br/app/editais/%s/%s/%s", controle[0], controle[3], builder));
-            } catch (Exception e) {
-                break;
-            }
-        }
-    }
-
-    private static void testLink(String path) throws Exception {
-        try{
-            restClient
-                    .get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path(path)
-                            .build())
-                    .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
-                        throw new RuntimeException("Error ao realizar a requisição");
-                    }))
-                    .body(String.class);
-        } catch (Exception ex){
-            throw new Exception("Error 404");
-        }
+        FileResponse response = restClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(path)
+                        .build())
+                .retrieve()
+                .body(FileResponse.class);
     }
 }

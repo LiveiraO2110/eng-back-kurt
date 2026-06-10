@@ -3,6 +3,6 @@ package com.example.prototipo.records.requests;
 import jakarta.validation.constraints.NotBlank;
 
 public record UserRequest(
-        @NotBlank String name
+        @NotBlank(message = "Nome de usuário não pode ser nulo ou vazio") String name
 ) {
 }

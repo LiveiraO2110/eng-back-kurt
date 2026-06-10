@@ -4,31 +4,42 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "customer_search_terms", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"customer_id", "term"})
+@Table(name = "termos_de_busca", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"cliente_id", "termo"})
 })
+@Getter
+@Setter
 public class SearchTerms {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
 
-    @Getter
     @NotBlank
+    @Column(name = "termo", nullable = false)
     private String term;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
-    @Getter
+    @JoinColumn(name = "cliente_id")
     @NotNull
     private Customer customer;
+
+    @ManyToMany(mappedBy = "searchTerms")
+    private Set<State> states = new HashSet<>();
 
     public SearchTerms(){}
 
     public SearchTerms(Customer customer, String term){
         this.term = term;
         this.customer = customer;
+    }
+
+    public void addState(State state){
+        this.states.add(state);
     }
 }

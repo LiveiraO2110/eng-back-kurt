@@ -4,16 +4,13 @@
 
 ## 1 - Busca Personalizada sem ser a do dia
 
-- Colocar para o usuário conseguir aplicar diversos filtros relacionados com os 
-atributos das licitações
-
-## 2 - Salvar os links pertinentes
-
-- Salvar todos os links de documentos da licitação
+- Colocar para o usuário selecionar o cliente que ele quer fazer a busca
+- Colocar para o usuário selecionar se a busca é do DIA, SEMANA, MES
+- Colocar para o usuário escolher o limite de editais que ele quer na busca
 
 ### Filtros:
 
 - UF
 - Data
 
-## 3 - Ver se é necessário armazenar os itens das licitações
+## 2 - Testse unitarios (Controller, Service)

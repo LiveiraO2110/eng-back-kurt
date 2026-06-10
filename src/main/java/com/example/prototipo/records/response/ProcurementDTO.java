@@ -18,8 +18,7 @@ public record ProcurementDTO(
     String cnpj,
     String name,
     String modalidade,
-    String link,
-    Set<String> documentos
+    String link
 ) {
     public ProcurementDTO(Procurement procurement){
         this(
@@ -29,14 +28,13 @@ public record ProcurementDTO(
                 procurement.getPncpId(),
                 procurement.getDescription(),
                 procurement.getCity(),
-                procurement.getUf(),
+                procurement.getState().getUf(),
                 procurement.getOpenDate(),
                 procurement.getCloseDate(),
                 procurement.getCnpj(),
                 procurement.getName(),
                 procurement.getModalidade(),
-                procurement.getEditalLink(),
-                procurement.getLinks()
+                procurement.getEditalLink()
         );
     }
 }

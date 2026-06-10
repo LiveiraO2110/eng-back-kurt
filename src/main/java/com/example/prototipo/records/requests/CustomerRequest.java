@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record CustomerRequest(
-        @NotNull Long user_id,
-        @NotBlank String name
+        @NotNull(message = "Id do usuário não pode ser nulo") Long userId,
+        @NotBlank(message = "Nome do cliente não pode ser nulo ou vazio") String name
 ) {
 }

@@ -2,10 +2,14 @@ package com.example.prototipo.repository;
 
 import com.example.prototipo.models.Customer;
 import com.example.prototipo.models.Procurement;
+import com.example.prototipo.models.State;
+import com.example.prototipo.records.OpportunitiesPNCP;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,10 +25,24 @@ public class ProcurementRepositoryTest {
     void shouldReturnTrueExistsByCustomer_IdAndPncpid(){
         Customer customer = new Customer("Customer Test");
         em.persist(customer);
-        Procurement procurement = new Procurement();
-        procurement.setPncpId("83024240000153-1-000084/2026");
-        procurement.setCustomer(customer);
 
+        State state = new State("UF");
+        em.persist(state);
+
+        Procurement procurement = new Procurement(customer, new OpportunitiesPNCP(
+                "Titulo",
+                "desc",
+                "83024240000153-1-000084/2026",
+                "Orgao",
+                "Nome",
+                "Municipio",
+                "Uf",
+                "Modalidade",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        ), state);
+        procurement.setEditalLink("Link");
         em.persist(procurement);
 
         boolean result = repository.existsByCustomer_IdAndPncpId(customer.getId(), procurement.getPncpId());
@@ -36,11 +54,27 @@ public class ProcurementRepositoryTest {
     void shouldReturnFalseExistsByCustomer_IdAndPncpid(){
         Customer customer = new Customer("Customer Test");
         em.persist(customer);
-        Procurement procurement = new Procurement();
-        procurement.setPncpId("83024240000153-1-000084/2026");
-        procurement.setCustomer(customer);
 
+        State state = new State("UF");
+        em.persist(state);
+
+        Procurement procurement = new Procurement(customer, new OpportunitiesPNCP(
+                "Titulo",
+                "desc",
+                "83024240000153-1-000084/2026",
+                "Orgao",
+                "Nome",
+                "Municipio",
+                "Uf",
+                "Modalidade",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        ), state);
+        procurement.setEditalLink("Link");
         em.persist(procurement);
+
+        em.flush();
 
         boolean result = repository.existsByCustomer_IdAndPncpId(customer.getId(), "83024240000153-1-000084/2025");
 

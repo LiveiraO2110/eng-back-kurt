@@ -2,10 +2,14 @@ package com.example.prototipo.service;
 
 import com.example.prototipo.models.Procurement;
 import com.example.prototipo.models.SearchTerms;
+import com.example.prototipo.models.State;
 import com.example.prototipo.records.OpportunitiesPNCP;
 import com.example.prototipo.repository.ProcurementRepository;
 import com.example.prototipo.repository.SearchTermsRepository;
+import com.example.prototipo.repository.StateRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -18,7 +22,10 @@ public class SchedulerWorker {
     private ProcurementRepository repository;
     @Autowired
     private SearchTermsRepository searchTermsRepository;
+    @Autowired
+    private StateRepository stateRepository;
 
+    @Scheduled(fixedDelay = 1800000)
     public void customerSearchTerms(){
         List<SearchTerms> terms = searchTermsRepository.findAll();
 
@@ -32,9 +39,12 @@ public class SchedulerWorker {
                     continue;
                 }
 
-                Procurement newProcurement = new Procurement(term.getCustomer(), procurement);
+                State state = stateRepository.findByUf(procurement.uf())
+                        .orElseThrow(() -> new EntityNotFoundException("Estado com UF: "+procurement.uf()+" não encontrado"));
 
-                ProcurementService.getLinks(newProcurement);
+                Procurement newProcurement = new Procurement(term.getCustomer(), procurement, state);
+
+                ProcurementService.getLink(newProcurement);
 
                 repository.save(newProcurement);
             }

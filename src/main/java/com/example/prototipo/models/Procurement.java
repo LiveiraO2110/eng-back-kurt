@@ -1,83 +1,66 @@
 package com.example.prototipo.models;
 
+import com.example.prototipo.enums.Status;
 import com.example.prototipo.records.OpportunitiesPNCP;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-@Table(name = "procurements", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"customer_id", "pncpId"})
+@Table(name = "editais", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"cliente_id", "pncpId"})
 })
+@Getter
+@Setter
 public class Procurement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
 
-    @Getter
-    @Setter
     private String pncpId;
 
-    @Getter
-    @Setter
     @Lob
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(name = "descricao", columnDefinition = "TEXT", nullable = false)
     private String description;
 
-    @Getter
-    @Setter
+    @Column(name = "cidade", nullable = false)
     private String city;
 
-    @Getter
-    @Setter
+    @Column(name = "data_abertura", nullable = false)
     private LocalDateTime openDate;
 
-    @Getter
-    @Setter
+    @Column(name = "data_fechamento", nullable = false)
     private LocalDateTime closeDate;
 
-    @Getter
-    @Setter
+    @Column(name = "cnpj", nullable = false)
     private String cnpj;
 
-    @Getter
-    @Setter
+    @Column(name = "nome", nullable = false)
     private String name;
 
-    @Getter
-    @Setter
-    private String uf;
-
-    @Getter
-    @Setter
+    @Column(name = "modalidade", nullable = false)
     private String modalidade;
 
-    @Getter
-    @Setter
-    private boolean validated;
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
-    @Getter
-    @Setter
+    @Column(name = "edital_link", nullable = false)
     private String editalLink;
 
-    @ElementCollection
-    @Getter
-    private final Set<String> links = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
-    @Getter
-    @Setter
-    private Customer customer;
+    @JoinColumn(name = "estado_id")
+    private State state;
 
     public Procurement(){}
 
-    public Procurement(Customer customer, OpportunitiesPNCP opportunity){
+    public Procurement(Customer customer, OpportunitiesPNCP opportunity, State state){
         this.pncpId = opportunity.numero_controle_pncp();
         this.description = opportunity.description();
         this.city = opportunity.municipio_nome();
@@ -85,14 +68,10 @@ public class Procurement {
         this.closeDate = opportunity.data_fim_vigencia();
         this.cnpj = opportunity.orgao_cnpj();
         this.name = opportunity.orgao_nome();
-        this.uf = opportunity.uf();
         this.modalidade = opportunity.modalidade_licitacao_nome();
         this.customer = customer;
-        this.validated = false;
-    }
-
-    public void addLink(String link){
-        links.add(link);
+        this.state = state;
+        this.status = Status.PENDENTE;
     }
 
     @Override
@@ -106,10 +85,9 @@ public class Procurement {
                 ", closeDate=" + closeDate +
                 ", cnpj='" + cnpj + '\'' +
                 ", name='" + name + '\'' +
-                ", uf='" + uf + '\'' +
+                ", uf='" + state.getUf() + '\'' +
                 ", modalidade='" + modalidade + '\'' +
-                ", validated=" + validated +
-                ", links=" + links +
+                ", validated=" + status.toString() +
                 ", customer=" + customer +
                 '}';
     }
