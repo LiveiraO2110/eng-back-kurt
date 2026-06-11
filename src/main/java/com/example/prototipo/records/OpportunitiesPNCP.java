@@ -15,6 +15,7 @@ public record OpportunitiesPNCP(
         String municipio_nome,
         String uf,
         String modalidade_licitacao_nome,
+        String numero_sequencial,
         LocalDateTime data_atualizacao_pncp,
         LocalDateTime data_inicio_vigencia,
         LocalDateTime data_fim_vigencia

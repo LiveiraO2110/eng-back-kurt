@@ -19,7 +19,7 @@ public class Customer {
     @Column(name = "nome", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<SearchTerms> searchTerms = new HashSet<>();
 
     @ManyToOne
@@ -48,5 +48,10 @@ public class Customer {
 
     public void addSearchTerm(SearchTerms term){
         searchTerms.add(term);
+    }
+
+    public void removeSearchTerm(SearchTerms terms){
+        this.searchTerms.remove(terms);
+        terms.setCustomer(null);
     }
 }

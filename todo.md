@@ -2,15 +2,11 @@
 
 --- 
 
-## 1 - Busca Personalizada sem ser a do dia
+## 1 - Mudar o metodo POST no ControllerSearchTerms ou no ControllerCustomer
+### Para ele aceitar/criar mais de um termo de busca por requisição
 
-- Colocar para o usuário selecionar o cliente que ele quer fazer a busca
-- Colocar para o usuário selecionar se a busca é do DIA, SEMANA, MES
-- Colocar para o usuário escolher o limite de editais que ele quer na busca
+## 2 - Criar endpoint para alterar o status do edital
 
-### Filtros:
+## 3 - Finalizar o getLink
 
-- UF
-- Data
-
-## 2 - Testse unitarios (Controller, Service)
+## 4 - Fazer endpoint para salvar edital

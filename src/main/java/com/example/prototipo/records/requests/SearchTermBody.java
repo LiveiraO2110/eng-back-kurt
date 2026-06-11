@@ -3,11 +3,10 @@ package com.example.prototipo.records.requests;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.List;
+import java.util.Set;
 
-public record SearchTermRequest(
-        @NotNull(message = "Id do cliente não pode ser nulo") Long customerId,
+public record SearchTermBody(
         @NotBlank(message = "Termo não pode ser nulo ou vazio") String term,
-        @NotNull(message = "Array do estados não pode ser nulo") List<Long> statesId
+        @NotNull(message = "Array do estados não pode ser nulo") Set<Long> statesId
 ) {
 }

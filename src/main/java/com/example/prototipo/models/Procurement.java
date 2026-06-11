@@ -47,6 +47,9 @@ public class Procurement {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "numero_sequencial", nullable = false)
+    private String numeroSequencial;
+
     @Column(name = "edital_link", nullable = false)
     private String editalLink;
 
@@ -69,6 +72,7 @@ public class Procurement {
         this.cnpj = opportunity.orgao_cnpj();
         this.name = opportunity.orgao_nome();
         this.modalidade = opportunity.modalidade_licitacao_nome();
+        this.numeroSequencial = opportunity.numero_sequencial();
         this.customer = customer;
         this.state = state;
         this.status = Status.PENDENTE;

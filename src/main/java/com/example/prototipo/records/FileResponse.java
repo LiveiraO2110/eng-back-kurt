@@ -1,8 +1,8 @@
 package com.example.prototipo.records;
 
-import java.util.Set;
+import java.util.List;
 
 public record FileResponse(
-        Set<File> files
+        List<File> files
 ) {
 }

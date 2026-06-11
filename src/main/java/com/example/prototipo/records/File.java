@@ -3,6 +3,7 @@ package com.example.prototipo.records;
 public record File(
         String tipoDocumentoNome,
         String titulo,
-        String uri
+        String url,
+        int sequencialDocumento
 ) {
 }
