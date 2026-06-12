@@ -53,6 +53,9 @@ public class Procurement {
     @Column(name = "edital_link", nullable = false)
     private String editalLink;
 
+    @Column(name = "link", nullable = true)
+    private String link;
+
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Customer customer;
@@ -76,6 +79,7 @@ public class Procurement {
         this.customer = customer;
         this.state = state;
         this.status = Status.PENDENTE;
+        this.link = "https://pncp.gov.br/app/editais/"+opportunity.orgao_cnpj()+"/2026/"+opportunity.numero_sequencial();
     }
 
     @Override

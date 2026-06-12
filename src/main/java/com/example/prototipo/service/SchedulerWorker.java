@@ -40,9 +40,6 @@ public class SchedulerWorker {
         List<SearchTerms> terms = searchTermsRepository.findAll();
 
         for (SearchTerms term : terms) {
-            System.out.println("-----------------------------------------------------");
-            System.out.println(term.getTerm()+": ");
-
             List<OpportunitiesPNCP> procurements = dailySearch(term);
 
             for (OpportunitiesPNCP procurement : procurements) {
@@ -60,7 +57,7 @@ public class SchedulerWorker {
                 Procurement newProcurement = new Procurement(term.getCustomer(), procurement, state.get());
 
                 if(procurementService.getLink(newProcurement)){
-//                repository.save(newProcurement);
+                    repository.save(newProcurement);
                 }
             }
         }

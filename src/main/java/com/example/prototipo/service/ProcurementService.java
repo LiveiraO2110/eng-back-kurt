@@ -8,6 +8,7 @@ import com.example.prototipo.repository.ProcurementRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -76,8 +77,6 @@ public class ProcurementService {
     public boolean getLink(Procurement procurement){
         String path = "/api/pncp/v1/orgaos/"+procurement.getCnpj()+"/compras/2026/"+procurement.getNumeroSequencial()+"/arquivos";
 
-        System.out.println("Fazendo requisição: "+path);
-
         ParameterizedTypeReference<List<File>> typeReference =
                 new ParameterizedTypeReference<List<File>>() {};
 
@@ -94,13 +93,16 @@ public class ProcurementService {
 
             assert response != null;
 
-            System.out.println(response);
-
              Optional<File> file =  response.stream()
                     .filter((f) -> f.tipoDocumentoNome().equalsIgnoreCase("edital"))
                     .findFirst();
 
-             return file.isPresent() && isLinkPdf(file.get().url());
+             if(file.isPresent() && isLinkPdf(file.get().url())){
+                 procurement.setEditalLink(file.get().url());
+                 return true;
+             }
+
+             return false;
         } catch (RestClientResponseException ex) {
             System.err.println("Erro na requisição: Status " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
             return false;
@@ -115,8 +117,8 @@ public class ProcurementService {
 
     public boolean isLinkPdf(String url) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout((int) Duration.ofSeconds(10).toMillis());
-        factory.setReadTimeout((int) Duration.ofSeconds(25).toMillis());
+        factory.setConnectTimeout((int) Duration.ofSeconds(30).toMillis());
+        factory.setReadTimeout((int) Duration.ofSeconds(60).toMillis());
 
         System.out.println(url);
 
@@ -126,7 +128,6 @@ public class ProcurementService {
                     .baseUrl("https://pncp.gov.br")
                     .requestFactory(factory)
                     .defaultHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-                    .defaultHeader("Accept", "application/pdf, */*")
                     .build();
 
             var headers = checkerClient.get()
@@ -135,12 +136,15 @@ public class ProcurementService {
                     .toBodilessEntity()
                     .getHeaders();
 
-            MediaType contentType = headers.getContentType();
+            ContentDisposition contentDisposition = headers.getContentDisposition();
 
-            System.out.println(contentType != null);
-            System.out.println(contentType.includes(MediaType.APPLICATION_PDF));
+            String filename = contentDisposition.getFilename();
 
-            return contentType != null && contentType.includes(MediaType.APPLICATION_PDF);
+            if (filename != null && !filename.isBlank()) {
+                return filename.toLowerCase().endsWith(".pdf");
+            }
+
+            return url.toLowerCase().contains(".pdf");
 
         } catch (Exception e) {
             System.err.println("Não foi possível verificar o tipo do link: " + e.getMessage());
